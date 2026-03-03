@@ -1,1 +1,1 @@
-
+Este proyecto implementa una Red Neuronal Convolucional (CNN) para el reconocimiento de dígitos escritos a mano utilizando el dataset MNIST. El modelo procesa imágenes en escala de grises de 28x28 píxeles y aprende automáticamente patrones espaciales mediante capas convolucionales, funciones de activación y capas densas para realizar la clasificación de los números del 0 al 9. El objetivo principal es aplicar conceptos fundamentales de deep learning y visión por computadora en una tarea clásica de reconocimiento de imágenes.
