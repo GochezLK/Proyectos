@@ -1,0 +1,382 @@
+Este es el funcional con todas las mejoras que pude xd
+
+# Importa el dataset MNIST desde Keras (contiene imágenes de dígitos escritos a mano del 0 al 9)
+from tensorflow.keras.datasets import mnist  
+
+# Importa la librería NumPy para manejo de arreglos y operaciones matemáticas
+import numpy as np  
+
+# Importa Matplotlib para graficar datos
+import matplotlib.pyplot as plt  
+
+# Importa Seaborn, librería de visualización basada en Matplotlib
+import seaborn as sns  
+
+# Configura Seaborn para que el tamaño de la fuente en las gráficas sea más grande (escala 2)
+sns.set(font_scale=2)  
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+index = np.random.choice(np.arange(len(X_train)), 24, replace=False)
+figure, axes = plt.subplots(nrows=4, ncols=6, figsize=(16, 9))
+for ax, img, target in zip(axes.ravel(), X_train[index], y_train[index]):
+    ax.imshow(img, cmap=plt.cm.gray_r)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_title(target)
+plt.tight_layout()# Carga el dataset MNIST y lo divide en:
+# - X_train, y_train: imágenes y etiquetas de entrenamiento
+# - X_test, y_test: imágenes y etiquetas de prueba
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+# Selecciona aleatoriamente 24 índices únicos del conjunto de entrenamiento
+index = np.random.choice(np.arange(len(X_train)), 24, replace=False)
+
+# Crea una figura con una cuadrícula de 4 filas y 6 columnas para mostrar imágenes
+# figsize establece el tamaño total de la figura en pulgadas (16 x 9)
+figure, axes = plt.subplots(nrows=4, ncols=6, figsize=(16, 9))
+
+# Recorre al mismo tiempo:
+# - Cada "ax" (espacio de la cuadrícula donde se dibuja una imagen)
+# - Cada "img" (imagen seleccionada de X_train)
+# - Cada "target" (etiqueta de la imagen correspondiente en y_train)
+for ax, img, target in zip(axes.ravel(), X_train[index], y_train[index]):
+    # Muestra la imagen en escala de grises invertida (gray_r)
+    ax.imshow(img, cmap=plt.cm.gray_r)
+    # Quita las marcas de los ejes (no se muestran números en x ni y)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    # Coloca el dígito real como título de cada imagen
+    ax.set_title(target)
+
+# Ajusta los espacios entre las subgráficas para que no se encimen
+plt.tight_layout()
+
+# Redimensiona el conjunto de entrenamiento para agregar un canal (1, escala de grises)
+# El tamaño final de cada imagen será (28, 28, 1)
+# Además convierte los valores a float32 y normaliza dividiendo entre 255 (para que estén entre 0 y 1)
+X_train = X_train.reshape((-1,28,28,1)).astype('float32') / 255
+X_test = X_test.reshape((-1,28,28,1)).astype('float32') / 255
+
+# Importa la función para convertir etiquetas a codificación "one-hot"
+from tensorflow.keras.utils import to_categorical  
+
+# Convierte las etiquetas de enteros (ej. 3, 7, 9) a vectores binarios
+# Ejemplo: el dígito 3 se convierte en [0,0,0,1,0,0,0,0,0,0]
+y_train = to_categorical(y_train)  
+y_test = to_categorical(y_test)  
+
+# Importa capas necesarias para construir la red neuronal:
+# - Input: capa de entrada
+# - Conv2D: capa convolucional
+# - MaxPooling2D: capa de reducción (submuestreo)
+# - Flatten: aplana los datos en un vector
+# - Dense: capa totalmente conectada (neurona densa)
+from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense 
+
+# Importa la clase Model para crear un modelo funcional en Keras
+from tensorflow.keras.models import Model 
+
+# Define la capa de entrada con imágenes de tamaño 28x28 y 1 canal (escala de grises)
+inputs = Input(shape=(28,28,1))
+
+# Primera capa convolucional:
+# - 64 filtros
+# - Cada filtro de tamaño 3x3
+# - Función de activación ReLU
+x = Conv2D(64, (3,3), activation='relu', name='conv2d')(inputs)  
+
+# Primera capa de MaxPooling:
+# - Reduce la dimensionalidad tomando el valor máximo en ventanas de 2x2
+x = MaxPooling2D((2,2), name='max_pooling2d')(x)  
+
+# Segunda capa convolucional:
+# - 128 filtros de 3x3
+# - Activación ReLU
+x = Conv2D(128, (3,3), activation='relu', name='conv2d_1')(x)  
+
+# Segunda capa de MaxPooling (otra reducción espacial 2x2)
+x = MaxPooling2D((2,2), name='max_pooling2d_1')(x)  
+
+# Aplana los mapas de características resultantes en un vector 1D
+x = Flatten()(x)  
+
+# Capa densa totalmente conectada con 128 neuronas y activación ReLU
+x = Dense(128, activation='relu', name='dense_128')(x)  
+
+# Capa de salida:
+# - 10 neuronas (una por cada dígito 0–9)
+# - Activación softmax para clasificación multiclase
+outputs = Dense(10, activation='softmax', name='output')(x)  
+
+# Crea el modelo CNN usando la API funcional de Keras
+cnn_funcional = Model(inputs=inputs, outputs=outputs)  
+
+# Compila el modelo:
+# - Optimizador Adam
+# - Función de pérdida: entropía cruzada categórica (para clasificación multiclase)
+# - Métrica de evaluación: precisión (accuracy)
+cnn_funcional.compile(optimizer='adam', 
+    loss='categorical_crossentropy', 
+    metrics=['accuracy'])  
+
+# Muestra un resumen de la arquitectura del modelo:
+# - Capas, parámetros y forma de salida de cada capa
+cnn_funcional.summary()
+
+# Número de épocas (iteraciones completas sobre el conjunto de entrenamiento)
+num_epochs = 5  
+
+# Lista para guardar el historial de pesos del primer filtro convolucional
+weights_history = []
+
+# Lista para guardar el historial de pérdidas (loss) por época
+loss_history = [] 
+
+# Entrenamiento del modelo por varias épocas
+for epoch in range(num_epochs):
+    
+    # Entrena la red neuronal UNA época por iteración
+    history = cnn_funcional.fit(
+        X_train, y_train,       # Datos de entrenamiento
+        epochs=1,               # Solo una época en cada ciclo
+        batch_size=64,          # Tamaño de lote (batch) = 64
+        validation_split=0.1,   # 10% de los datos se usan para validación
+        verbose=1               # Muestra progreso en pantalla
+    )
+    
+    # Guardamos la pérdida de entrenamiento de esa época
+    loss_history.append(history.history["loss"][0])  
+
+    # Obtenemos los pesos de la primera capa convolucional ("conv2d")
+    conv1_weights = cnn_funcional.get_layer("conv2d").get_weights()[0]
+    
+    # Guardamos los pesos para análisis posterior
+    weights_history.append(conv1_weights)
+
+# Convertimos la lista de pesos en un arreglo de numpy (tipo objeto, porque son arrays)
+weights_history = np.array(weights_history, dtype=object)
+
+# Graficamos la curva de pérdida (loss) a lo largo de las épocas
+plt.plot(range(1, num_epochs+1), loss_history, marker="o")
+plt.xlabel("Época")
+plt.ylabel("Loss")
+plt.title("Curva de aprendizaje")
+plt.grid(True)
+plt.show()
+
+# Evaluamos el modelo ya entrenado con los datos de prueba (X_test, y_test)
+# Esto nos devuelve dos valores:
+#   - loss (pérdida en los datos de prueba)
+#   - accuracy (exactitud del modelo en los datos de prueba)
+loss, accuracy = cnn_funcional.evaluate(X_test, y_test)
+
+# Mostramos los resultados con 4 decimales
+print(f"Loss: {loss:.4f}, Accuracy: {accuracy:.4f}")
+
+# Generamos predicciones del modelo usando el conjunto de prueba
+# Cada elemento de 'predictions' será un vector de probabilidades
+# correspondientes a cada clase posible.
+predictions = cnn_funcional.predict(X_test)
+
+# Función para mostrar las probabilidades de cada clase en una predicción
+def display_probabilities(prediction):
+    # Recorremos cada valor de la predicción (probabilidad por clase)
+    for i, prob in enumerate(prediction):
+        # Imprimimos el índice de la clase y su probabilidad en porcentaje
+        print(f'{i}: {prob:.10%}')
+
+# Mostramos las probabilidades de la primera imagen del conjunto de prueba
+display_probabilities(predictions[0])
+
+# Reorganizamos el conjunto de prueba a su forma original de imágenes 28x28 píxeles
+images = X_test.reshape((-1, 28, 28))
+
+# Lista para guardar las predicciones incorrectas
+incorrect_predictions = []
+
+# Recorremos todas las predicciones junto con sus etiquetas verdaderas
+for i, (p, e) in enumerate(zip(predictions, y_test)):
+    pred, exp = np.argmax(p), np.argmax(e)  # pred = clase predicha, exp = clase esperada
+    if pred != exp:
+        # Guardamos: índice, imagen, predicción y etiqueta esperada
+        incorrect_predictions.append((i, images[i], pred, exp))
+
+# Creamos una figura con una cuadrícula de 4 filas x 6 columnas (24 espacios)
+figure, axes = plt.subplots(nrows=4, ncols=6, figsize=(16, 12))
+
+# Dibujamos hasta 24 ejemplos de predicciones incorrectas
+for ax, item in zip(axes.ravel(), incorrect_predictions[:24]):
+    index, img, pred, exp = item
+    ax.imshow(img, cmap=plt.cm.gray_r)  # Mostramos la imagen en escala de grises
+    ax.set_xticks([])                   # Quitamos los ejes en X
+    ax.set_yticks([])                   # Quitamos los ejes en Y
+    ax.set_title(f'index:{index}\np:{pred}, e:{exp}')  # Mostramos índice, predicción y esperado
+
+# Ajustamos los márgenes para que no se encimen los gráficos
+plt.tight_layout()
+
+# Guardamos el modelo entrenado en un archivo .keras
+# Este archivo contendrá:
+#   - La arquitectura del modelo (capas, conexiones, etc.)
+#   - Los pesos entrenados
+#   - La configuración de entrenamiento (optimizador, loss, métricas)
+cnn_funcional.save('cnn_model_funcional.keras')
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Lista para guardar el promedio de los pesos de cada filtro en cada época
+# (sin usar valor absoluto)
+avg_weights_history = []
+
+# Recorremos los pesos de cada época
+for w in weights_history:
+    # Calculamos el promedio simple de cada filtro en la capa conv2d
+    # axis=(0,1,2) → promedia sobre (alto, ancho, canales), dejando solo la dimensión de filtros
+    avg_weights = np.mean(w, axis=(0,1,2))
+    avg_weights_history.append(avg_weights)
+
+# Convertimos a arreglo de numpy para poder graficar
+avg_weights_history = np.array(avg_weights_history)
+
+# Graficamos la evolución de los pesos
+plt.figure(figsize=(15,6))
+
+# Recorremos los 64 filtros de la capa conv2d
+for i in range(64):  
+    # Dibujamos cómo cambia el promedio del filtro i a lo largo de las épocas
+    plt.plot(range(1, num_epochs+1), avg_weights_history[:, i], alpha=0.3, color='blue')
+
+plt.xlabel("Época")
+plt.ylabel("Promedio de peso")
+plt.title("Evolución de los filtros de la primera capa convolucional (sin abs)")
+plt.show()
+
+from tensorflow.keras.models import Model
+import matplotlib.pyplot as plt
+import numpy as np
+
+# =============================
+# Seleccionamos ejemplos de "1" y "9" del conjunto de prueba
+# =============================
+img_1 = X_test[y_test.argmax(axis=1) == 1][0].reshape(1,28,28,1)
+img_9 = X_test[y_test.argmax(axis=1) == 9][0].reshape(1,28,28,1)
+
+# Creamos un modelo intermedio para obtener las salidas (activaciones)
+# de la primera capa convolucional ("conv2d")
+conv1_model = Model(inputs=cnn_funcional.input,
+                    outputs=cnn_funcional.get_layer("conv2d").output)
+
+# =============================
+# Obtenemos las activaciones de la primera conv para las dos imágenes
+# =============================
+act_1 = conv1_model.predict(img_1)   # Forma: (1, h, w, 64) → 64 mapas de activación
+act_9 = conv1_model.predict(img_9)
+
+# =============================
+# Obtenemos los pesos de la primera capa convolucional
+# =============================
+conv1_weights = cnn_funcional.get_layer("conv2d").get_weights()[0]
+
+# Calculamos el promedio simple de cada filtro (sin absolutos)
+avg_weights = np.mean(conv1_weights, axis=(0,1,2))  # Vector de tamaño (64,)
+
+# =============================
+# Mostrar activaciones para el número "1"
+# =============================
+num_filters = act_1.shape[-1]
+fig, axes = plt.subplots(8,8, figsize=(15,15))  # 64 subplots (8x8)
+
+for i, ax in enumerate(axes.flat):
+    if i < num_filters:
+        # Mostramos el mapa de activación del filtro i
+        ax.imshow(act_1[0, :, :, i], cmap='viridis')
+        ax.set_xticks([])
+        ax.set_yticks([])
+        # Título con número de filtro y su peso promedio
+        ax.set_title(f'Filtro {i+1}\nPeso: {avg_weights[i]:.2f}', fontsize=8)
+
+plt.suptitle("Activaciones de los filtros para el número 1", fontsize=16)
+plt.tight_layout()
+plt.show()
+
+# =============================
+# Mostrar activaciones para el número "9"
+# =============================
+fig, axes = plt.subplots(8,8, figsize=(15,15))
+
+for i, ax in enumerate(axes.flat):
+    if i < num_filters:
+        ax.imshow(act_9[0, :, :, i], cmap='viridis')
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_title(f'Filtro {i+1}\nPeso: {avg_weights[i]:.2f}', fontsize=8)
+
+plt.suptitle("Activaciones de los filtros para el número 9", fontsize=16)
+plt.tight_layout()
+plt.show()
+
+# =============================
+# Graficar variación de los pesos promedio de cada filtro
+# =============================
+plt.figure(figsize=(12,6))
+plt.bar(range(1, num_filters+1), avg_weights, color="blue", alpha=0.7)
+plt.xlabel("Filtro")
+plt.ylabel("Valor promedio del peso")
+plt.title("Variación de los pesos de la primera capa convolucional")
+plt.show()
+
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+
+# =============================
+# Seleccionamos una imagen de "1" y una de "9"
+# =============================
+img_1 = X_test[y_test.argmax(axis=1) == 1][0]  # Primera imagen de la clase "1"
+img_9 = X_test[y_test.argmax(axis=1) == 9][0]  # Primera imagen de la clase "9"
+
+# =============================
+# Modelo intermedio: salida de la primera conv ("conv2d")
+# =============================
+conv1_model = tf.keras.models.Model(
+    inputs=cnn_funcional.input,
+    outputs=cnn_funcional.get_layer("conv2d").output
+)
+
+# =============================
+# Historial de activaciones (por época) para cada dígito
+# =============================
+act1_history = []
+act9_history = []
+
+for epoch in range(num_epochs):
+    # ---- Activaciones para el "1" ----
+    act1 = conv1_model.predict(img_1[np.newaxis, ...])  # Forma: (1, h, w, 64)
+    avg1 = np.mean(act1, axis=(1,2))  # Promedio espacial por filtro → (1,64)
+    act1_history.append(avg1[0])      # Guardamos vector de 64 valores
+
+    # ---- Activaciones para el "9" ----
+    act9 = conv1_model.predict(img_9[np.newaxis, ...])
+    avg9 = np.mean(act9, axis=(1,2))
+    act9_history.append(avg9[0])
+
+# Convertimos las listas en arrays → (num_epochs, 64)
+act1_history = np.array(act1_history)
+act9_history = np.array(act9_history)
+
+# =============================
+# Gráfica comparativa
+# =============================
+plt.figure(figsize=(15,6))
+
+# Graficamos la evolución de los 64 filtros para "1" (azul) y "9" (rojo)
+for i in range(64):
+    plt.plot(range(1, num_epochs+1), act1_history[:, i], color="blue", alpha=0.3)
+    plt.plot(range(1, num_epochs+1), act9_history[:, i], color="red", alpha=0.3)
+
+plt.xlabel("Época")
+plt.ylabel("Promedio de activación por filtro")
+plt.title("Evolución de activaciones en la primera capa (1 = azul, 9 = rojo)")
+plt.show()
