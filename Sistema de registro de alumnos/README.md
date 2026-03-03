@@ -1,1 +1,2 @@
-
+Este proyecto consiste en el desarrollo de un sistema web para el registro y gestión de alumnos, implementado utilizando HTML, CSS, JavaScript y PHP. La aplicación permite almacenar, consultar y administrar información académica a través de una interfaz dinámica y estructurada, integrando tanto el diseño frontend como la lógica de procesamiento en el backend.
+El sistema fue desplegado en un servicio de hosting, permitiendo su acceso en línea y demostrando la implementación completa de una solución web funcional, desde el desarrollo local hasta su publicación en un entorno de producción.
