@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="principal.css" rel="stylesheet">
+        <title>Cetis 132</title>
+    </head>
+    <body>
+                    <h1>Bienvenido  <img src="descarga.jpeg"></h1>
+            </div>
+            <div>
+                <h2>Registro de alumno</h2>
+        <form action="registro.php" method="POST" >
+            Matricula: <input type="text" name="txtMatricula"><br/>
+            Nombre: <input type="text" name="txtNombre"><br/>
+            Apellido Paterno: <input type="text" name="txtApellido_paterno"><br>
+            Apellido Materno: <input type="text" name="txtApellido_materno"><br>
+            Edad:<input type="text" name="txtEdad"><br>
+            Especialidad:
+                <select name="cmbEspecialidad" >
+                    <option value="PR">PR</option>
+                    <option value="RH">RH</option>
+                    <option value="DM">DM</option>
+                    <option value="CN">CN</option>
+                    <option value="MA">MA</option>
+                </select>
+                <br>
+            Grupo: 
+                <select name="cmbGrupo">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                </select>
+                <br/>
+
+            Semestre: 
+                <select name="cmbSemestre">
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                </select>
+                <br/>
+            Turno: 
+                <select name="cmbTurno">
+                    <option value="M">M</option>
+                    <option value="V">V</option>
+                </select>
+                <br/>
+
+            <input type="submit" value="Insertar alumno" name="btnRegistrar">
+        </form>
+            </div>
+                
+            <div>
+                <h2>Eliminar alumno</h2>
+        <form action="eliminar.php" method="POST">
+            clave: <input type="text" name="txtMatricula"><br/>
+            <input type="submit" value="Eliminar alumno" name="btnEliminar">
+        </form>
+            </div>
+    
+            <div>
+                <h2>Actualizar infromación de alumno</h2>
+                    <form action="actualizar.php" method="POST">
+                    Matricula: <input type="text" name="txtMatricula"><br/>
+                    Nombre: <input type="text" name="txtNombre"><br/>
+                    Apellido Paterno: <input type="text" name="txtApellido_paterno"><br>
+                    Apellido Materno: <input type="text" name="txtApellido_materno"><br>
+                    Edad:<input type="text" name="txtEdad"><br>
+                    Especialidad:
+                        <select name="cmbEspecialidad" >
+                            <option value="PR">PR</option>
+                            <option value="RH">RH</option>
+                            <option value="DM">DM</option>
+                            <option value="CN">CN</option>
+                            <option value="MA">MA</option>
+                        </select>
+                            <br>
+                    Grupo: 
+                        <select name="cmbGrupo">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                            <br/>
+
+                    Semestre: 
+                        <select name="cmbSemestre">
+                            <option value="1">1</option>
+                            <option value="3">3</option>
+                            <option value="5">5</option>
+                        </select>
+                            <br/>
+                    Turno: 
+                        <select name="cmbTurno">
+                            <option value="M">M</option>
+                            <option value="V">V</option>
+                        </select>
+                            <br/>
+                            <input type="submit" value="Actualizar datos" name="btnActualizar">
+                        </form>
+            </div>
+               
+            <div>
+                <h2>Buscar alumno</h2>
+                <form action="registros.php" method="POST">
+                    Matricula:<input type="text" name="txtMatricula">
+            <input type="submit" value="Buscar alumno" name="btnAlumno">
+        </form>
+            </div>
+    </body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        body{
+            background-color: #256E8D;
+        }
+        table{
+            border: 2px solid #353A46; 
+            background-color: #3ABAF1;
+            border-radius: 10px;
+        }
+        input[type-text] , [type-password]{
+            width: 100%;
+            padding: 8px 20px;
+            border: 2px ssolid #eee;
+            box-sizing: border-box;
+        }
+        img{
+            width: 100px;
+            height: 100px;
+            border-radius: 100%;
+        }
+        label{
+            font-size: 14xp;
+            font-weight: bold;
+            font-family: arial;
+        }
+        input[type=submit]{
+            background-color: #1C94C8;
+            color: white;
+            padding: 8px 10px;
+            margin: 8px 0px;
+            border: solid;
+            cursor: pointer;
+            width: 40%;
+        }
+     </style>
+       
+    <center>
+        <script src="confirmacion.js"></script>
+        <form name="form" action="inicio">
+            <table>
+                <tr><td colspan="2" style="background-color: #3AA8DB; padding: botton 5px; padding-top: 5px;"><label>Loading</label></td></tr>
+                <tr><td align="center" rowspan="5"><img src="s.png"/></td>
+                    <td><label>Usuario</label></td></tr>
+                <tr>
+                    <td><input type="text" name="txtusuario"></td>
+                </tr>
+                <tr>
+                    <td><label>Contraseña</label></td>
+                </tr>
+                <tr>
+                    <td><input type="password" name="txtpassword"></td>
+                </tr>
+                <tr>
+                    <td><input onclick="ir()" type="button" value="inicio"></td>
+                </tr>
+            </table>
+        </form>
+    </center>  
+
+</body>
+</html>
