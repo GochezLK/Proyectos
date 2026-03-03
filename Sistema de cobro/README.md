@@ -1,1 +1,2 @@
-
+Este proyecto consiste en el desarrollo de una aplicación móvil para la gestión de una panadería, creada utilizando Xamarin Forms. La aplicación fue diseñada para facilitar el control de productos, precios y ventas, permitiendo una administración más organizada y eficiente del negocio.
+El sistema integra una interfaz intuitiva y funcional, enfocada en mejorar la experiencia del usuario y optimizar los procesos internos, aplicando principios de desarrollo multiplataforma y buenas prácticas de programación móvil.
